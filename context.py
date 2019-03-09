@@ -41,6 +41,7 @@ class Context:
         self.gp = GradePurpose()
 
         self.sub_list = ["shape", "surface", "perf_comp"]
+        self.tags = ["main"] + self.sub_list
 
         if self.frequency == "weekly":
             self.group_col = "date_bin"
@@ -50,3 +51,11 @@ class Context:
             raise Exception("wrong frequency in context init()")
 
         self.mkdir = utils.mkdir
+
+        self.lang_map = {
+            "main": "总体",
+            "shape": "板形",
+            "surface": "表面",
+            "perf_comp": "成份性能",
+            "act_weight": "实际吨位"
+        }

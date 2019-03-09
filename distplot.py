@@ -60,8 +60,10 @@ class DistPlot():
     def title(self, cfg):
         plot_title = cfg["title"]
         plt.title(
-            "{}{}".format(
-                self.rec.get_item_name(), plot_title
+            "{}一次封闭{}({})".format(
+                self.rec.get_item_name(),
+                plot_title,
+                self.ctx.lang_map[cfg["data_col"]]
             )
         )
 

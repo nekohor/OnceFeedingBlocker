@@ -19,9 +19,9 @@ class Analyzer:
             self.rec.get_item_file_name("inter.xlsx")
         )
 
-        self.tags = ["main"] + self.ctx.sub_list
-        print(self.tags)
-        for tag in self.tags:
+        self.ctx.tags = ["main"] + self.ctx.sub_list
+        print(self.ctx.tags)
+        for tag in self.ctx.tags:
             self.build_pivot_table(self.df_defect_desc, tag)
             if self.ctx.table_use == "single":
                 self.plot(self.df_defect_desc, tag)

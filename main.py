@@ -3,6 +3,7 @@ from oncefeeding import OnceFeeding
 from analyzer import Analyzer
 from record import Record
 from entry import Entry
+from pptxrender import PPTXRender
 
 
 def main(ent):
@@ -14,6 +15,14 @@ def main(ent):
         fed = OnceFeeding(ctx, rec)
         ana = Analyzer(ctx, fed, rec)
         ana
+
+
+def render(ent):
+    ctx = Context(ent)
+    for idx in ctx.config_table.index:
+        rec = Record(ctx, idx)
+        ppt_render = PPTXRender(ctx, rec)
+        ppt_render.build_pptx()
 
 
 if __name__ == '__main__':
@@ -28,4 +37,5 @@ if __name__ == '__main__':
     ent.start_month = 201902
     ent.end_month = 201902
 
-    main(ent)
+    # main(ent)
+    render(ent)
