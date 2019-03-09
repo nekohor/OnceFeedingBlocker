@@ -70,7 +70,7 @@ class Analyzer:
         df = df_origin.loc[df_origin["{}_qualify".format(tag)] == 0]
         # df = df.loc[df[self.ctx.group_col] == self.ctx.time_seg]
         df.to_excel(
-            self.rec.get_item_file_name("block_{}.xlsx".format(tag))
+            self.rec.get_item_file_name("{}_block.xlsx".format(tag))
         )
         return df
 
@@ -86,7 +86,7 @@ class Analyzer:
             aggfunc=[np.sum, np.size]
         ).to_excel(
             self.rec.get_item_file_name(
-                "pivot_table_{}.xlsx".format(tag)
+                "{}_pivot_table.xlsx".format(tag)
             )
         )
 

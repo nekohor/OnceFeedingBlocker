@@ -79,7 +79,7 @@ class DistPlot():
         plot_title = cfg["title"]
         plot_file_name = (
             self.rec.get_item_file_name(
-                "{}_{}.png".format(plot_title, self.ctx.tag)
+                "{}_{}.png".format(self.ctx.tag, plot_title)
             )
         )
         plt.savefig(plot_file_name)
