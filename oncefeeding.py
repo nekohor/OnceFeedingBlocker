@@ -1,5 +1,5 @@
 from dateutil.parser import parse
-from datetime import datetime, timedelta
+from datetime import datetime
 import pandas as pd
 
 
@@ -136,18 +136,14 @@ class OnceFeeding():
         print(first_datetime)
         print(last_datetime)
 
-        days = (last_datetime - first_datetime).days
-        date_bin = []
-        for i in range(days + 1):
-            current_datetime = first_datetime + timedelta(days=i)
-            # judge if current date is Thursday
-            if current_datetime.weekday() == 2:
-                date_bin.append(current_datetime)
-        print(date_bin)
+        weektime_list = self.ctx.weeker.get_weektime_list(
+            first_datetime,
+            last_datetime
+        )
 
         df["date_bin"] = pd.cut(
             df["datetime"],
-            bins=date_bin
+            bins=weektime_list
         ).apply(lambda x: str(x))
 
         return df
@@ -164,9 +160,11 @@ class OnceFeeding():
         summary["合格板坯吨位"] = df.groupby(group_col)["qualify_weight"].sum()
         summary["生产板坯吨位"] = df.groupby(group_col)["slab_weight"].sum()
 
-        summary["一次投料合格率"] = (
+        summary["{}".format(self.ctx.cn_name)] = (
             summary["合格板坯吨位"] / summary["生产板坯吨位"] * 100
         ).apply(lambda x: round(x, 2))
+
+        summary["main_qualify_rate"] = summary["{}".format(self.ctx.cn_name)]
 
         for sub_qualify in self.sub_qualify_list:
             summary["{}_weight".format(sub_qualify)] = (

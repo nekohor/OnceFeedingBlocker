@@ -1,5 +1,6 @@
 import pandas as pd
 import sys
+from weeker import Weeker
 sys.path.append("C:/NutCloudSync/code/enigineerbox")
 import utils
 from grade import GradePurpose
@@ -10,11 +11,20 @@ class Context:
 
     def __init__(self, ent):
 
+        self.cn_name = "一次投料合格率"
+
         self.frequency = ent.frequency
+        self.week_num = ent.week_num
+        self.month_num = ent.month_num
+        self.mon = self.month % 100
+        self.current_year = self.month_num // 100
+        self.last_year = self.current_year - 1
+
         self.table_use = ent.table_use
 
         self.start_month = ent.start_month
         self.end_month = ent.end_month
+
         self.month_list = utils.generate_month(ent.start_month, ent.end_month)
         self.year_list = [201800, 201900]
 
@@ -31,8 +41,8 @@ class Context:
             "plot/plotConfig.xlsx"
         )
 
-        self.result_dir = "D:/Work/一次投料合格率"
-        self.inter_dir = "D:/Work/一次投料合格率/中间计算结果"
+        self.result_dir = "D:/Work/{}".format(self.cn_name)
+        self.inter_dir = "D:/Work/{}/中间计算结果".format(self.cn_name)
 
         self.db = {}
         self.db["2250"] = DBON(2250)
@@ -57,5 +67,10 @@ class Context:
             "shape": "板形",
             "surface": "表面",
             "perf_comp": "成份性能",
-            "act_weight": "实际吨位"
+            "act_weight": "实际吨位",
+            "coil_num": "卷数",
+            "plot_dist_absolute": "绝对量分布图",
+            "plot_dist_relative": "相对量分布图"
         }
+        self.weeker = Weeker()
+        self.weeker.build_table(self.current_year)

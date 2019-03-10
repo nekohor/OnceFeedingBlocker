@@ -19,8 +19,11 @@ class PPTXRender:
             width = Inches(2)
             height = Inches(1)  # 预设位置及大小
             textbox = slide.shapes.add_textbox(left, top, width, height)
-            textbox.text = "{}{}一次投料合格率".format(
-                self.rec.get_item_name(), self.ctx.lang_map[tag])
+            textbox.text = "{}{}{}".format(
+                self.rec.get_item_name(),
+                self.ctx.lang_map[tag],
+                self.ctx.cn_name
+            )
 
             # 图片罗列
             cfg_table = self.ctx.plot_config

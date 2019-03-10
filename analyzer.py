@@ -23,8 +23,8 @@ class Analyzer:
         print(self.ctx.tags)
         for tag in self.ctx.tags:
             self.build_pivot_table(self.df_defect_desc, tag)
-            if self.ctx.table_use == "single":
-                self.plot(self.df_defect_desc, tag)
+            # if self.ctx.table_use == "single":
+            self.plot(self.df_defect_desc, tag)
 
     def get_main_defect(self, df_origin):
         df = df_origin
@@ -76,7 +76,7 @@ class Analyzer:
 
     def build_pivot_table(self, df_origin, tag):
         df = self.select_block_data(df_origin, tag)
-        pd.pivot_table(
+        pt = pd.pivot_table(
             df,
             index=[
                 self.ctx.group_col,
@@ -84,11 +84,15 @@ class Analyzer:
                 "steel_grade"],
             values=["act_weight"],
             aggfunc=[np.sum, np.size]
-        ).to_excel(
+        )
+        pt.to_excel(
             self.rec.get_item_file_name(
                 "{}_pivot_table.xlsx".format(tag)
             )
         )
+
+        # pivot table for docx render
+        # s = pd.DataFrame()
 
     def plot(self, df_origin, tag):
         df = self.select_block_data(df_origin, tag)
