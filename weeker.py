@@ -6,8 +6,8 @@ import pandas as pd
 
 class Weeker:
 
-    def __init__(self):
-        self.table = pd.DataFrame()
+    def __init__(self, current_year):
+        self.table = self.build_table(current_year)
 
     def get_weektime_list(self, first_datetime, last_datetime):
         days = (last_datetime - first_datetime).days
@@ -25,6 +25,7 @@ class Weeker:
         date_bin_list = []
         for weektime in weektime_list:
             if i == 0:
+                i = i + 1
                 continue
             else:
                 date_bin_list.append(
@@ -33,7 +34,7 @@ class Weeker:
                         weektime_list[i].strftime('%Y-%m-%d'),
                     )
                 )
-            i = i + 1
+                i = i + 1
         print(date_bin_list)
         return date_bin_list
 
@@ -62,13 +63,16 @@ class Weeker:
         weektime_list = self.select_weektimes(weektime_list, current_year)
 
         date_bin_list = self.get_date_bin_list(weektime_list)
-
+        print(date_bin_list)
+        table = pd.DataFrame()
         i = 0
         for date_bin in date_bin_list:
             i = i + 1
-            self.table.loc[i, "date_bin"] = date_bin
+            table.loc[i, "date_bin"] = date_bin
 
-        self.table.to_excel("week/weekTable.xlsx")
+        table.to_excel("week/weekTable.xlsx")
+        return table
 
     def get_date_bin(self, week_num):
+        print(self.table)
         return self.table.loc[week_num, "date_bin"]

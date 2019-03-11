@@ -1,6 +1,11 @@
 import pandas as pd
 import sys
 from weeker import Weeker
+
+from docx.enum.table import WD_TABLE_ALIGNMENT
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.shared import Inches
+
 sys.path.append("C:/NutCloudSync/code/enigineerbox")
 import utils
 from grade import GradePurpose
@@ -16,7 +21,7 @@ class Context:
         self.frequency = ent.frequency
         self.week_num = ent.week_num
         self.month_num = ent.month_num
-        self.mon = self.month % 100
+        self.mon = self.month_num % 100
         self.current_year = self.month_num // 100
         self.last_year = self.current_year - 1
 
@@ -72,5 +77,44 @@ class Context:
             "plot_dist_absolute": "绝对量分布图",
             "plot_dist_relative": "相对量分布图"
         }
-        self.weeker = Weeker()
-        self.weeker.build_table(self.current_year)
+        self.weeker = Weeker(self.current_year)
+
+    def add_one_table(self, document, summary):
+
+        def cut_tail(v_str):
+            if v_str.endswith(".0"):
+                return v_str.split(".")[0]
+            else:
+                return v_str
+
+        summary = summary.round(2)
+        row_num = len(summary.index) + 1
+        col_num = len(summary.columns) + 1
+        print(row_num, col_num)
+        table = document.add_table(rows=row_num, cols=col_num)
+        # 表格第一行为DataFrame的列名
+        hdr_cells = table.rows[0].cells
+        side_cells = table.columns[0].cells
+        i = 1
+        for val in summary.columns:
+            hdr_cells[i].text = cut_tail(str(val))
+            i = i + 1
+
+        i = 1
+        for val in summary.index:
+            side_cells[i].text = cut_tail(str(val))
+            i = i + 1
+
+        i = 1
+        for col in summary.columns:
+            j = 1
+            for idx in summary.index:
+                table.columns[i].cells[j].text = (
+                    cut_tail(str(summary.loc[idx, col]))
+                    # 注意cell的text只能接收字符串
+                )
+                j = j + 1
+            i = i + 1
+        table.alignment = WD_TABLE_ALIGNMENT.CENTER
+        table.style = "Table Grid"
+        document.add_paragraph("")

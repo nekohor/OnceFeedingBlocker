@@ -66,7 +66,7 @@ class DistPlot():
         data_series = data_series.apply(lambda x: round(x, 2))
 
         if data_series.shape[0] > self.max_dist_num:
-            data_series = data_series[:self.max_dist_num]
+            data_series = data_series[:int(self.max_dist_num)]
 
         data_series.plot(
             kind=plot_kind, color=plot_color, alpha=plot_alpha)

@@ -17,6 +17,7 @@ class Trender:
     def __init__(self, ctx, rec):
         self.ctx = ctx
         self.rec = rec
+
         self.df_trend = self.get_trend_table()
         self.update_trend_table()
 
@@ -48,7 +49,7 @@ class Trender:
 
         for tag in self.ctx.tags:
             rate = summary.loc[
-                self.get_cur_idx(),
+                self.get_summary_idx(),
                 "{}_qualify_rate".format(tag)
             ]
             self.df_trend.loc[
@@ -59,62 +60,53 @@ class Trender:
         self.df_trend.to_excel(
             self.get_trend_table_name())
 
-    def get_cur_idx(self):
-        if self.ctx.frequency == "weekly":
-            return self.ctx.week.get_data_bin(self.ctx.week_num)
-        elif self.ctx.frequency == "monthly":
-            return self.ctx.month_num
-        else:
-            raise Exception("wrong frequency in Trend::get_cur_idx()")
+    def get_summary_idx(self):
+        summary_idx_map = {
+            "weekly": self.ctx.weeker.get_date_bin(self.ctx.week_num),
+            "monthly": self.ctx.month_num
+        }
+        return summary_idx_map[self.ctx.frequency]
+
+    def get_format_col(self):
+        format_col_map = {
+            "weekly": "第{}周",
+            "monthly": "{}月"
+        }
+        return format_col_map[self.ctx.frequency]
+
+    def get_cur_num(self):
+        cur_num_map = {
+            "weekly": self.ctx.week_num,
+            "monthly": self.ctx.mon
+        }
+        return cur_num_map[self.ctx.frequency]
 
     def get_cur_col(self):
-        if self.ctx.frequency == "weekly":
-            return "第{}周".format(self.ctx.week_num)
-        elif self.ctx.frequency == "monthly":
-            return "{}月".format(self.ctx.mon)
-        else:
-            raise Exception("wrong frequency in Trend::get_cur_col()")
+        cur_col_map = {
+            "weekly": self.get_format_col().format(self.get_cur_num()),
+            "monthly": self.get_format_col().format(self.get_cur_num())
+        }
+        return cur_col_map[self.ctx.frequency]
 
     def get_col_list(self):
-        return getattr(
-            self, "get_{}_col_list".format(self.ctx.frequency))()
-
-    def get_monthly_col_list(self):
-        first_month = self.ctx.current_year * 100 + 1
-        this_month = self.ctx.month_num
+        if self.get_cur_num() < 8:
+            this_num = 8
+        else:
+            this_num = self.get_cur_num()
         col_list = [
-            (first_month + i)
-            for i in range(this_month - first_month + 1)]
-        return col_list
-
-    def get_weekly_col_list(self):
-        col_list = [
-            "第{}周".format(i + 1)
-            for i in range(self.ctx.week_num + 1)]
+            self.get_format_col().format(i + 1)
+            for i in range(this_num)]
         return col_list
 
     def get_table_for_doc(self):
-        tbl = getattr(
-            self, "get_{}_table_for_doc".format(self.ctx.frequency))()
+        tbl = self.df_trend[
+            ["负责人", "去年实绩", "目标值"] +
+            self.get_col_list()[-8:]
+        ]
         tbl["是否达标"] = self.get_reach_standard(self.df_trend)
         self.data = self.df_trend[self.get_col_list()]
         tbl["累计值"] = self.get_cumulative_value(self.data)
         return tbl
-
-    def get_monthly_table_for_doc(self):
-        table_for_doc = self.df_trend[
-            ["负责人", "定义", "目标值"] +
-            self.get_col_list()[-2:]
-        ]
-        self.data = self.df_trend[self.col_list]
-        return table_for_doc
-
-    def get_weekly_table_for_doc(self):
-        table_for_doc = self.df_trend[
-            ["负责人", "去年实绩", "目标值"] +
-            self.get_col_list()[-8:]
-        ]
-        return table_for_doc
 
     def get_reach_standard(self, df):
         return [
@@ -147,11 +139,15 @@ class Trender:
         plt.close("all")
 
     def build_plot_data(self, trnd):
-        df = pd.DataFrame(columns=self.plot_col)
-        df["目标值"] = trnd["目标值"]
+        df = pd.DataFrame(
+            index=self.plot_col,
+            columns=["目标值", "实际值", "累计值"])
+
+        print([trnd["目标值"]] * len(self.plot_col))
         print(trnd)
-        print(trnd[201901])
         print(self.plot_col)
+
+        df["目标值"] = [trnd["目标值"]] * len(self.plot_col)
         df["实际值"] = trnd[self.plot_col]
         df["累计值"] = trnd[self.col_list].cumsum(
         )[-self.col_max:].apply(lambda x: round(x, 2))

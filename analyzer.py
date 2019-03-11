@@ -23,7 +23,6 @@ class Analyzer:
         print(self.ctx.tags)
         for tag in self.ctx.tags:
             self.build_pivot_table(self.df_defect_desc, tag)
-            # if self.ctx.table_use == "single":
             self.plot(self.df_defect_desc, tag)
 
     def get_main_defect(self, df_origin):
