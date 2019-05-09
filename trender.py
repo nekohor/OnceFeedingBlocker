@@ -63,7 +63,7 @@ class Trender:
     def get_summary_idx(self):
         summary_idx_map = {
             "weekly": self.ctx.weeker.get_date_bin(self.ctx.week_num),
-            "monthly": self.ctx.month_num
+            "monthly": self.ctx.mdate_num
         }
         return summary_idx_map[self.ctx.frequency]
 
@@ -77,7 +77,7 @@ class Trender:
     def get_cur_num(self):
         cur_num_map = {
             "weekly": self.ctx.week_num,
-            "monthly": self.ctx.mon
+            "monthly": self.ctx.month
         }
         return cur_num_map[self.ctx.frequency]
 
@@ -186,12 +186,12 @@ class Trender:
 
         plt.ylim((0, 100))
         plt.xticks(np.arange(df.shape[0] + 1),
-                   list(self.col_list) + [""], fontsize=self.FONTSIZE)
+                   list(self.plot_col) + [""], fontsize=self.FONTSIZE)
         plt.legend(loc="upper center", ncol=3, fontsize=self.FONTSIZE)
 
     def plot_table(self, df):
-        plt.subplot(2, 1, 2, axisbg='#000000')
-        col_labels = self.col_list
+        plt.subplot(2, 1, 2, facecolor='#000000')
+        col_labels = self.plot_col
         print(col_labels)
         row_labels = ['目标值', '实际值', '累计值']
         table_vals = df[row_labels].T.values

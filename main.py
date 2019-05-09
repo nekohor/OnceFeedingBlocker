@@ -6,6 +6,14 @@ from entry import Entry
 from pptxrender import PPTXRender
 from docxrender import DOCXRender
 from trender import Trender
+import logging
+
+logging.basicConfig(
+    format=(
+        "%(asctime)s - %(pathname)s[line:%(lineno)d] - "
+        "%(levelname)s: %(message)s"
+    ),
+    level=logging.DEBUG)
 
 
 def main(ent):
@@ -42,16 +50,20 @@ if __name__ == '__main__':
     # =================================
 
     # ========== current ==============
-    ent.month_num = 201902
-    ent.week_num = 10
+    ent.mdate_num = 201904
+    ent.week_num = 17
     # =================================
 
     ent.table_use = "single"
     # ent.table_use = "normal"
 
     # for select by month in database just like range
-    ent.start_month = 201902
-    ent.end_month = 201902
+    ent.start_month = 201904
+    ent.end_month = 201904
+
+    ent.year_list = [2018, 2019]
+
+    ent.crit_file_path = "e:/crit_result_data/crti_1580_cold_20190401_20190429.xlsx"
 
     main(ent)
 

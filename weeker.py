@@ -42,7 +42,8 @@ class Weeker:
         year_list = np.array(
             [x.year for x in weektime_list]
         )
-        first_idx = np.where(year_list == current_year)[0][0]
+        # 注意年度开头的部分星期，因此要减1
+        first_idx = np.where(year_list == current_year)[0][0] - 1
         last_idx = np.where(year_list == current_year)[0][-1]
         print("first_idx", first_idx)
         print("last_idx", last_idx)

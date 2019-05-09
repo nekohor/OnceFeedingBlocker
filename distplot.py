@@ -16,7 +16,7 @@ class DistPlot():
     def __init__(self, ctx, rec):
         self.ctx = ctx
         self.rec = rec
-        self.max_dist_num = 12
+        self.max_dist_num = int(12)
 
     def plot(self, df):
         cfg_table = self.ctx.plot_config
@@ -40,7 +40,7 @@ class DistPlot():
         )[data_col]
 
         if data_series.shape[0] > self.max_dist_num:
-            data_series = data_series[:self.max_dist_num]
+            data_series = data_series.iloc[:self.max_dist_num]
 
         data_series.plot(
             kind=plot_kind, color=plot_color, alpha=plot_alpha)
@@ -66,7 +66,7 @@ class DistPlot():
         data_series = data_series.apply(lambda x: round(x, 2))
 
         if data_series.shape[0] > self.max_dist_num:
-            data_series = data_series[:int(self.max_dist_num)]
+            data_series = data_series.iloc[:self.max_dist_num]
 
         data_series.plot(
             kind=plot_kind, color=plot_color, alpha=plot_alpha)

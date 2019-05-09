@@ -6,23 +6,26 @@ from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Inches
 
-sys.path.append("C:/NutCloudSync/code/enigineerbox")
-import utils
-from grade import GradePurpose
-from dbon import DBON
+import rollen
+
+from defects import Defects
 
 
 class Context:
 
     def __init__(self, ent):
 
+        self.utils = rollen.tool()
+
         self.cn_name = "一次投料合格率"
 
         self.frequency = ent.frequency
+
         self.week_num = ent.week_num
-        self.month_num = ent.month_num
-        self.mon = self.month_num % 100
-        self.current_year = self.month_num // 100
+        self.mdate_num = ent.mdate_num
+
+        self.month = self.utils.time.get_month(self.mdate_num)
+        self.current_year = self.utils.time.get_year(self.mdate_num)
         self.last_year = self.current_year - 1
 
         self.table_use = ent.table_use
@@ -30,8 +33,10 @@ class Context:
         self.start_month = ent.start_month
         self.end_month = ent.end_month
 
-        self.month_list = utils.generate_month(ent.start_month, ent.end_month)
-        self.year_list = [201800, 201900]
+        self.year_list = ent.year_list
+
+        self.mdates = self.utils.time.get_month_dates(
+            self.start_month, self.end_month)
 
         if self.table_use == "single":
             self.config_table = pd.read_excel(
@@ -46,14 +51,13 @@ class Context:
             "plot/plotConfig.xlsx"
         )
 
-        self.result_dir = "D:/Work/{}".format(self.cn_name)
-        self.inter_dir = "D:/Work/{}/中间计算结果".format(self.cn_name)
+        self.result_dir = "D:/work/{}".format(self.cn_name)
+        self.inter_dir = "D:/work/{}/中间计算结果".format(self.cn_name)
 
-        self.db = {}
-        self.db["2250"] = DBON(2250)
-        self.db["1580"] = DBON(1580)
-
-        self.gp = GradePurpose()
+        # self.db = {}
+        # self.db["2250"] = DBON(2250)
+        # self.db["1580"] = DBON(1580)
+        # self.gp = GradePurpose()
 
         self.sub_list = ["shape", "surface", "perf_comp"]
         self.tags = ["main"] + self.sub_list
@@ -65,7 +69,7 @@ class Context:
         else:
             raise Exception("wrong frequency in context init()")
 
-        self.mkdir = utils.mkdir
+        self.mkdir = self.utils.direct.mkdir
 
         self.lang_map = {
             "main": "总体",
@@ -78,6 +82,11 @@ class Context:
             "plot_dist_relative": "相对量分布图"
         }
         self.weeker = Weeker(self.current_year)
+
+        self.defects = Defects().map
+
+        self.df_crit = pd.read_excel(ent.crit_file_path)
+        self.df_crit.index = self.df_crit["coil_id"]
 
     def add_one_table(self, document, summary):
 
