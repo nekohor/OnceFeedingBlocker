@@ -23,6 +23,8 @@ class Analyzer:
         for tag in self.ctx.tags:
             if self.df_defect_desc.shape[0] == 0:
                 pass
+            elif self.ctx.frequency == "weekly":
+                pass
             else:
                 self.build_pivot_table(self.df_defect_desc, tag)
                 self.plot(self.df_defect_desc, tag)
@@ -31,19 +33,21 @@ class Analyzer:
         df = df_origin
         df["main_qualify"] = df["qualify"]
         df["main_defect"] = np.nan
-        print(df.columns)
-        print(self.ctx.defects)
-        df_shape = df[self.ctx.defects["shape"]]
-        shape_defects = self.ctx.defects["shape"]
-        for idx in df_shape.index:
-            print("shape", idx)
-            defect_idx_array = np.where(df_shape.loc[idx] == 0)[0]
-            if len(defect_idx_array) == 0:
-                continue
-            else:
-                defect_idx = defect_idx_array[0]
-                df.loc[idx, "shape_defect"] = shape_defects[defect_idx]
-                df.loc[idx, "main_defect"] = shape_defects[defect_idx]
+
+        if self.ctx.frequency == "monthly":
+            df_shape = df[self.ctx.defects["shape"]]
+            shape_defects = self.ctx.defects["shape"]
+            for idx in df_shape.index:
+                print("shape", idx)
+                defect_idx_array = np.where(df_shape.loc[idx] == 0)[0]
+                if len(defect_idx_array) == 0:
+                    continue
+                else:
+                    defect_idx = defect_idx_array[0]
+                    df.loc[idx, "shape_defect"] = shape_defects[defect_idx]
+                    df.loc[idx, "main_defect"] = shape_defects[defect_idx]
+        else:
+            df.loc["shape_defect"] = np.nan
 
         df_surface = df[self.ctx.defects["surface"]]
         surface_defects = self.ctx.defects["surface"]

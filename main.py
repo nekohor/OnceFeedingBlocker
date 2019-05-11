@@ -30,8 +30,10 @@ def render(ent):
     ctx = Context(ent)
     for idx in ctx.config_table.index:
         rec = Record(ctx, idx)
-        pptx_render = PPTXRender(ctx, rec)
-        pptx_render.build_pptx()
+
+        if ctx.frequency == "monthly":
+            pptx_render = PPTXRender(ctx, rec)
+            pptx_render.build_pptx()
 
         if ctx.table_use == "single":
             trnd = Trender(ctx, rec)
@@ -45,20 +47,20 @@ if __name__ == '__main__':
 
     ent = Entry()
     # ========== freqency =============
-    # ent.frequency = "weekly"
-    ent.frequency = "monthly"
+    ent.frequency = "weekly"
+    # ent.frequency = "monthly"
     # =================================
 
     # ========== current ==============
     ent.mdate_num = 201904
-    ent.week_num = 17
+    ent.week_num = 19
     # =================================
 
     ent.table_use = "single"
     # ent.table_use = "normal"
 
     # for select by month in database just like range
-    ent.start_month = 201904
+    ent.start_month = 201903
     ent.end_month = 201904
 
     ent.year_list = [2018, 2019]
